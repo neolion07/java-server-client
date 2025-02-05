@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,9 @@ public class Main{
 		DataInputStream in;
 		DataOutputStream out;
 		Database db;
-		int req_code;	// 0: post, 1: read, 2: update, 3: delete
+		int req_code; //(role) 0:post, 1:read, 2:readall, 3:update, 4:delete
+					  //(employee) 5:post, 6:read, 7:readall, 8:update, 9:delete
+		String query;
 		
 		try {
 			srv = new ServerSocket(PORT);
@@ -27,17 +30,65 @@ public class Main{
 			
 			while (true){
 				sock = srv.accept();
-				System.out.println("Client connected");
-				
+				System.out.println("Connection from " + sock);
 				in = new DataInputStream(sock.getInputStream());
 				out = new DataOutputStream(sock.getOutputStream());
 				
-				System.out.println(in.readUTF());
+				req_code = in.readInt();
 				
-				out.writeUTF("The Gazing Lion is no more.");
+				switch (req_code){
+					case 0:
+						db.createRole(
+							in.readUTF(),
+							Double.parseDouble(in.readUTF())
+						);
+						break;
+					case 1:
+						
+						break;
+					case 2:
+						
+						break;
+					case 3:
+						db.updateRole(
+							in.readInt(),
+							in.readUTF(),
+							Double.parseDouble(in.readUTF())
+						);
+						break;
+					case 4:
+						db.deleteRole(in.readInt());
+						break;
+					case 5:
+						db.createEmployee(
+							in.readUTF(),
+							in.readUTF(),
+							in.readUTF(),
+							System.currentTimeMillis(),
+							in.readInt()
+						);
+						break;
+					case 6:
+						break;
+					case 7:
+						break;
+					case 8:
+						db.updateEmployee(
+							in.readUTF(),
+							in.readUTF(),
+							in.readUTF(),
+							in.readInt()
+						);
+						break;
+					case 9:
+						db.deleteEmployee(in.readUTF());
+						break;
+					default:
+						break;
+				}
 				
+				System.out.println("Closing connection from " + sock);
 				sock.close();
-				System.out.println("Client disconnected");
 			}
 		}
 		catch (IOException ex){

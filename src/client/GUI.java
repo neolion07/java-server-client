@@ -7,7 +7,6 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.net.Socket;
-//import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.DataInputStream;
@@ -15,8 +14,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class GUI extends JFrame{
-	//JFrame frm_1, frm_2, frm_3;
-	Socket socket;
+	Socket sock;
 	DataInputStream in;
 	DataOutputStream out;
 	String table;
@@ -24,26 +22,26 @@ public class GUI extends JFrame{
 	JMenu		m, n, o;
 	JMenuItem	m1, m2, n1, n2, o1, o2, o3, o4;
 	JDialog		dia1, dia2, dia3, dia4, dia5, dia6, dia7, dia8;
-	JPanel	pan0, pan01,								// main frame
+	JPanel	pan0, pan01,		// main frame
 			pan11, pan12, pan13,
 			pan21, pan22,
 			pan31, pan32, pan33, pan34,
 			pan41, pan42,
 			pan51, pan52, pan53, pan54, pan55,
-			pan61, pan62, pan63,
+			pan61, pan62,
 			pan71, pan72, pan73, pan74, pan75,
 			pan81, pan82;
 	JScrollPane	scr_01;
 	JTable	tbl_01, tbl_02;
 	DefaultTableModel	dtm_01, dtm_02;
-	JTextField	txt_f11, txt_f12,						// createRole
-				txt_f21,								// readRole
-				txt_f31, txt_f32, txt_f33,				// updateRole
-				txt_f41,								// deleteRole
+	JTextField	txt_f11, txt_f12,		// createRole
+				txt_f21,		// readRole
+				txt_f31, txt_f32, txt_f33,		// updateRole
+				txt_f41,		// deleteRole
 				txt_f51, txt_f52, txt_f53, txt_f54,		// createEmployee
-				txt_f61,								// readEmployee
+				txt_f61,		// readEmployee
 				txt_f71, txt_f72, txt_f73, txt_f74,		// updateEmployee
-				txt_f81;								// deleteEmployee
+				txt_f81;		// deleteEmployee
 	JButton	b11, b12,
 			b21, b22,
 			b31, b32,
@@ -61,7 +59,6 @@ public class GUI extends JFrame{
 			lbl_61,
 			lbl_71, lbl_72, lbl_73, lbl_74,
 			lbl_81;
-	JList l2, l6;
 	GridLayout gl;
 	public GUI(){
 		this.setTitle("Employee Management System");
@@ -70,7 +67,6 @@ public class GUI extends JFrame{
 		pan0 = new JPanel(new BorderLayout());
 		pan01 = new JPanel(new FlowLayout());
 		tbl_01 = new JTable();
-		refreshTable();
 		scr_01 = new JScrollPane(tbl_01);
 		lbl_01 = new JLabel("Current table: " + table, JLabel.CENTER);
 		mb = new JMenuBar();
@@ -102,14 +98,13 @@ public class GUI extends JFrame{
 		b12 = new JButton("Clear");
 		
 		dia2 = new JDialog(this, "Search Role");
-		dia2.setLayout(new GridLayout(3, 1));
+		dia2.setLayout(new GridLayout(2, 1));
 		pan21 = new JPanel(new GridLayout(1, 2));
 		pan22 = new JPanel(new GridLayout(1, 2));
 		lbl_21 = new JLabel("ID: ");
 		txt_f21 = new JTextField("");
 		b21 = new JButton("Search");
 		b22 = new JButton("Clear");
-		l2 = new JList();
 		
 		dia3 = new JDialog(this, "Update Role");
 		dia3.setLayout(new GridLayout(4, 1));
@@ -154,14 +149,13 @@ public class GUI extends JFrame{
 		b52 = new JButton("Clear");
 		
 		dia6 = new JDialog(this, "Search Employee");
-		dia6.setLayout(new GridLayout(3, 1));
+		dia6.setLayout(new GridLayout(2, 1));
 		pan61 = new JPanel(new GridLayout(1, 2));
 		pan62 = new JPanel(new GridLayout(1, 2));
 		lbl_61 = new JLabel("PID: ");
 		txt_f61 = new JTextField("");
 		b61 = new JButton("Search");
 		b62 = new JButton("Clear");
-		l6 = new JList();
 		
 		dia7 = new JDialog(this, "Update Employee");
 		dia7.setLayout(new GridLayout(5, 1));
@@ -185,11 +179,18 @@ public class GUI extends JFrame{
 		dia8.setLayout(new GridLayout(2, 1));
 		pan81 = new JPanel(new GridLayout(1, 2));
 		pan82 = new JPanel(new GridLayout(1, 2));
-		lbl_81 = new JLabel("ID: ");
+		lbl_81 = new JLabel("PID: ");
 		txt_f81 = new JTextField("");
 		b81 = new JButton("Delete");
 		b82 = new JButton("Clear");
-		
+				
+		// Main frame:
+		m.add(m1);	m.add(m2);
+		n.add(n1);	n.add(n2);
+		o.add(o1);	o.add(o2);	o.add(o3);	o.add(o4);
+		mb.add(m);	mb.add(n);	mb.add(o);
+		pan0.add(BorderLayout.NORTH, mb);
+		pan01.add(lbl_01);
 		m1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
@@ -228,7 +229,8 @@ public class GUI extends JFrame{
 		o2.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				System.out.println("Search row by ID");
+				if (table == "role") dia2.setVisible(true);
+				if (table == "employee") dia6.setVisible(true);
 			/*
             	if (table == "role") db.createRole("Cashier", 185.00);
 				if (table == "employee") db.createEmployee("E-25101586", "Claude", "Schulz", (new Date()).getTime(), 3);
@@ -238,83 +240,17 @@ public class GUI extends JFrame{
 		o3.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-            	System.out.println("...");
+            	if (table == "role") dia3.setVisible(true);
+				if (table == "employee") dia7.setVisible(true);
 			}
 		});
 		o4.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-            	System.out.println("...");
+            	if (table == "role") dia4.setVisible(true);
+				if (table == "employee") dia8.setVisible(true);
 			}
 		});
-		
-		b11.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-            	if (txt_f11.getText().equals("") ||
-            		txt_f12.getText().equals("")
-            	){
-            		System.out.println("Some fields are missing.");
-            	}
-            	else {
-            		System.out.println("OK");
-            	/*
-            		db.createRole(
-            			txt_f11.getText(),
-            			Double.parseDouble(txt_f12.getText())
-            		);
-            	//*/
-            	}
-			}
-		});
-		b12.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-            	txt_f11.setText("");
-            	txt_f12.setText("");
-			}
-		});
-		b51.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-            	if (txt_f51.getText().equals("") ||
-            		txt_f52.getText().equals("") ||
-            		txt_f53.getText().equals("") ||
-            		txt_f54.getText().equals("")
-            	){
-            		System.out.println("Some fields are missing.");
-            	}
-            	else {
-            		System.out.println("OK");
-            	/*
-            		db.createEmployee(
-            			txt_f51.getText(),
-            			txt_f52.getText(),
-            			txt_f53.getText(),
-            			(new Date()).getTime(),
-            			Integer.parseInt(txt_f54.getText())
-            		);
-            	//*/	
-            	}
-			}
-		});
-		b52.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-            	txt_f51.setText("");
-            	txt_f52.setText("");
-            	txt_f53.setText("");
-            	txt_f54.setText("");
-			}
-		});
-		
-		// Main frame:
-		m.add(m1);	m.add(m2);
-		n.add(n1);	n.add(n2);
-		o.add(o1);	o.add(o2);	o.add(o3);	o.add(o4);
-		mb.add(m);	mb.add(n);	mb.add(o);
-		pan0.add(BorderLayout.NORTH, mb);
-		pan01.add(lbl_01);
 		
 		// Add to Role:
 		pan11.add(lbl_11);	pan11.add(txt_f11);
@@ -325,19 +261,137 @@ public class GUI extends JFrame{
 		dia1.add(pan13);
 		dia1.setDefaultCloseOperation(dia1.DISPOSE_ON_CLOSE);
 		dia1.setSize(320, 240);
+		b11.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f11.getText().equals("") ||
+            		txt_f12.getText().equals("")
+            	){
+            		System.out.println("Some fields are missing.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+            			out.writeInt(0);
+		        		out.writeUTF(txt_f11.getText());
+		        		out.writeUTF(txt_f12.getText());
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b12.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f11.setText("");
+            	txt_f12.setText("");
+			}
+		});
 		
-		// Search:
+		// Search Role by ID:
 		pan21.add(lbl_21);	pan21.add(txt_f21);
 		pan22.add(b21);		pan22.add(b22);
+		dia2.add(pan21);
+		dia2.add(pan22);
+		dia2.setDefaultCloseOperation(dia2.DISPOSE_ON_CLOSE);
+		dia2.setSize(320, 240);
+		b21.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f21.getText().equals("")){
+            		System.out.println("ID required.");
+            	}
+            	else {
+            		System.out.println("OK");
+            	}
+			}
+		});
+		b22.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f21.setText("");
+			}
+		});
 		
+		// Modify Role by ID:
 		pan31.add(lbl_31);	pan31.add(txt_f31);
 		pan32.add(lbl_32);	pan32.add(txt_f32);
 		pan33.add(lbl_33);	pan33.add(txt_f33);
 		pan34.add(b31);		pan34.add(b32);
+		dia3.add(pan31);
+		dia3.add(pan32);
+		dia3.add(pan33);
+		dia3.add(pan34);
+		dia3.setDefaultCloseOperation(dia3.DISPOSE_ON_CLOSE);
+		dia3.setSize(320, 240);
+		b31.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f31.getText().equals("") ||
+            		txt_f32.getText().equals("") ||
+            		txt_f33.getText().equals("")
+            	){
+            		System.out.println("Some fields are missing.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+		        		out.writeInt(3);
+		        		out.writeInt(Integer.parseInt(txt_f31.getText()));
+		        		out.writeUTF(txt_f32.getText());
+		        		out.writeUTF(txt_f33.getText());
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b32.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f31.setText("");
+            	txt_f32.setText("");
+            	txt_f33.setText("");
+			}
+		});
 		
-		// Delete:
+		// Delete Role by ID:
 		pan41.add(lbl_41);	pan41.add(txt_f41);
 		pan42.add(b41);		pan42.add(b42);
+		dia4.add(pan41);
+		dia4.add(pan42);
+		dia4.setDefaultCloseOperation(dia4.DISPOSE_ON_CLOSE);
+		dia4.setSize(320, 240);
+		b41.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f41.getText().equals("")){
+            		System.out.println("ID required.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+		        		out.writeInt(4);
+		        		out.writeInt(Integer.parseInt(txt_f41.getText()));
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b42.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f41.setText("");
+			}
+		});
 		
 		// Add to Employee:
 		pan51.add(lbl_51);	pan51.add(txt_f51);
@@ -352,7 +406,150 @@ public class GUI extends JFrame{
 		dia5.add(pan55);
 		dia5.setDefaultCloseOperation(dia5.DISPOSE_ON_CLOSE);
 		dia5.setSize(320, 240);
+		b51.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f51.getText().equals("") ||
+            		txt_f52.getText().equals("") ||
+            		txt_f53.getText().equals("") ||
+            		txt_f54.getText().equals("")
+            	){
+            		System.out.println("Some fields are missing.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+		        		out.writeInt(5);
+		        		out.writeUTF(txt_f51.getText());
+		        		out.writeUTF(txt_f52.getText());
+		        		out.writeUTF(txt_f53.getText());
+		        		out.writeInt(Integer.parseInt(txt_f54.getText()));
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b52.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f51.setText("");
+            	txt_f52.setText("");
+            	txt_f53.setText("");
+            	txt_f54.setText("");
+			}
+		});
 		
+		// Search Employee by ID:
+		pan61.add(lbl_61);	pan61.add(txt_f61);
+		pan62.add(b61);		pan62.add(b62);
+		dia6.add(pan61);
+		dia6.add(pan62);
+		dia6.setDefaultCloseOperation(dia6.DISPOSE_ON_CLOSE);
+		dia6.setSize(320, 240);
+		b61.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f61.getText().equals("")){
+            		System.out.println("PID required.");
+            	}
+            	else {
+            		System.out.println("OK");
+            	}
+			}
+		});
+		b62.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f61.setText("");
+			}
+		});
+		
+		// Modify Employee by ID:
+		pan71.add(lbl_71);	pan71.add(txt_f71);
+		pan72.add(lbl_72);	pan72.add(txt_f72);
+		pan73.add(lbl_73);	pan73.add(txt_f73);
+		pan74.add(lbl_74);	pan74.add(txt_f74);
+		pan75.add(b71);		pan75.add(b72);
+		dia7.add(pan71);
+		dia7.add(pan72);
+		dia7.add(pan73);
+		dia7.add(pan74);
+		dia7.add(pan75);
+		dia7.setDefaultCloseOperation(dia7.DISPOSE_ON_CLOSE);
+		dia7.setSize(320, 240);
+		b71.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f71.getText().equals("") ||
+            		txt_f72.getText().equals("") ||
+            		txt_f73.getText().equals("") ||
+            		txt_f74.getText().equals("")
+            	){
+            		System.out.println("Some fields are missing.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+		        		out.writeInt(8);
+		        		out.writeUTF(txt_f71.getText());
+		        		out.writeUTF(txt_f72.getText());
+		        		out.writeUTF(txt_f73.getText());
+		        		out.writeInt(Integer.parseInt(txt_f74.getText()));
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b72.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f71.setText("");
+            	txt_f72.setText("");
+            	txt_f73.setText("");
+            	txt_f74.setText("");
+			}
+		});
+		
+		// Delete Employee by ID:
+		pan81.add(lbl_81);	pan81.add(txt_f81);
+		pan82.add(b81);		pan82.add(b82);
+		dia8.add(pan81);
+		dia8.add(pan82);
+		dia8.setDefaultCloseOperation(dia8.DISPOSE_ON_CLOSE);
+		dia8.setSize(320, 240);
+		b81.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	if (txt_f81.getText().equals("")){
+            		System.out.println("PID required.");
+            	}
+            	else {
+            		connectToServer();
+            		try {
+		        		out.writeInt(9);
+		        		out.writeUTF(txt_f81.getText());
+			        	sock.close();
+		        	}
+		        	catch (IOException ex){
+		        		Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+		        	}
+            	}
+			}
+		});
+		b82.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+            	txt_f81.setText("");
+			}
+		});
+		
+		// Frame settings:
 		this.getContentPane().add(pan0);
 		this.getContentPane().add(scr_01);
 		this.getContentPane().add(pan01);
@@ -360,6 +557,8 @@ public class GUI extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(gl);
 		this.setVisible(true);
+		
+		refreshTable();
 	}
 	
 	public void refreshTable(){
@@ -369,9 +568,22 @@ public class GUI extends JFrame{
         String[] employeeColumns = new String[] {
             "PID", "Name", "Surname", "Join Date", "Role ID"
         };
+        //*
+        Object[][] data = new Object[][] {
+            {1, "Sales Manager", 255.50 },
+            {2, "Cashier", 180.00 },
+            {3, "Inventory Manager", 220.75 },
+        };
+        Object[][] data2 = new Object[][] {
+            {39238122, "Travis", "Moons", "2023-08-05", 3 },
+            {39238123, "Clair", "Moons", "2023-08-05", 1 },
+            {36812001, "Claude", "Schulz", "2023-08-05", 2 },
+        };
+        //*/
+        
         
 		if (this.table == "role"){
-			dtm_01 = new DefaultTableModel(null, columns);
+			dtm_01 = new DefaultTableModel(null, roleColumns);
 			for (int i=0; i < data.length; i++){
 				dtm_01.addRow(data[i]);
 			}
@@ -379,12 +591,25 @@ public class GUI extends JFrame{
 			tbl_01.setModel(dtm_01);
 		}
 		if (this.table == "employee"){
-			dtm_02 = new DefaultTableModel(null, columns);
+			dtm_02 = new DefaultTableModel(null, employeeColumns);
 			for (int i=0; i < data2.length; i++){
 				dtm_02.addRow(data2[i]);
 			}
 			dtm_02.fireTableDataChanged();
 			tbl_01.setModel(dtm_02);
+		}
+	}
+	
+	public void connectToServer(){
+		final String host = "127.0.0.1";
+		final int port = 3000;
+		try {
+			this.sock = new Socket(host, port);
+			this.out = new DataOutputStream(sock.getOutputStream());
+			this.in = new DataInputStream(sock.getInputStream());
+		}
+		catch (IOException ex){
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 }

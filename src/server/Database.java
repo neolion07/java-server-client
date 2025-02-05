@@ -80,9 +80,9 @@ public class Database{
 			lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-	public ArrayList<String[]> readRole(int id){
+	public ArrayList<Object[]> readRole(int id){
 		String query = "SELECT * FROM role WHERE id=?";
-		ArrayList<String[]> results = new ArrayList<String[]>();
+		ArrayList<Object[]> results = new ArrayList<Object[]>();
 		PreparedStatement pst = null;
 		try {
 			if (id <= 0){
@@ -111,27 +111,16 @@ public class Database{
 	public void updateRole(int id, String name, double salary){
 		String query = "UPDATE Role SET name=?, salary=? WHERE id=?";
 		try (PreparedStatement pst = conn.prepareStatement(query)){
-			/*
-				if (id.length != name.length || id.length != salary.length){
-				throw new Exception("Some fields are missing.");
-			}
-			*/
 			conn.setAutoCommit(false);
-			//for (int i=0; i<id.length; i++){
-				pst.setString(1, name);
-				pst.setDouble(2, salary);
-				pst.setInt(3, id);
-				pst.executeUpdate();
-			//}			
+
+			pst.setString(1, name);
+			pst.setDouble(2, salary);
+			pst.setInt(3, id);
+			pst.executeUpdate();
+			
 			conn.commit();
-			System.out.println("Updated.");
+			System.out.println("Updated row ID " + id + " in table 'role'");
 		}
-		/*
-		catch (Exception ex){
-			Logger lgr = Logger.getLogger(Database.class.getName());
-			lgr.log(Level.SEVERE, ex.getMessage(), ex);
-		}
-		*/
 		catch (SQLException e){
 			if (conn != null){
 				try {
@@ -150,11 +139,12 @@ public class Database{
 		String query = "DELETE FROM Role WHERE id=?";
 		try (PreparedStatement pst = conn.prepareStatement(query)){
 			conn.setAutoCommit(false);
-			//for (int i=0; i<id.length; i++){
-				pst.setInt(1, id);
-				pst.executeUpdate();
-			//}
+
+			pst.setInt(1, id);
+			pst.executeUpdate();
+
 			conn.commit();
+			System.out.println("Deleted row ID " + id + " from table 'role'");
 		}
 		catch (SQLException e){
 			if (conn != null){
@@ -172,7 +162,7 @@ public class Database{
 	}
 	
 	// operations for table 'Employee'
-	public void createEmployee(String pid, String name, String surname, long join_date, int role_id){
+	public void createEmployee(String pid, String name, String surname, long curr_time, int role_id){
 		String query = "INSERT INTO Employee(pid, name, surname, join_date, role_id) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pst = conn.prepareStatement(query)){		
 			conn.setAutoCommit(false);
@@ -180,12 +170,12 @@ public class Database{
 			pst.setString(1, pid);		
 			pst.setString(2, name);
 			pst.setString(3, surname);
-			pst.setDate(4, new Date(join_date));
+			pst.setDate(4, new Date(curr_time));
 			pst.setInt(5, role_id);
 			pst.executeUpdate();
 			
 			conn.commit();
-			System.out.println("Inserted data into table 'Employee'");
+			System.out.println("Inserted data into table 'employee'");
 		}
 		catch (SQLException e){
 			if (conn != null){
@@ -202,9 +192,9 @@ public class Database{
 		}
 	}
 	
-	public ArrayList<String[]> readEmployee(String pid){
+	public ArrayList<Object[]> readEmployee(String pid){
 		String query = "SELECT * FROM employee WHERE pid=?";
-		ArrayList<String[]> results = new ArrayList<String[]>();
+		ArrayList<Object[]> results = new ArrayList<Object[]>();
 		PreparedStatement pst = null;
 		try {
 			if (pid == ""){
@@ -237,15 +227,15 @@ public class Database{
 		String query = "UPDATE employee SET name=?, surname=?, role_id=? WHERE pid=?";
 		try (PreparedStatement pst = conn.prepareStatement(query)){
 			conn.setAutoCommit(false);
-			//for (int i=0; i<pid.length; i++){
-				pst.setString(1, name);
-				pst.setString(2, surname);
-				pst.setInt(3, role_id);
-				pst.setString(4, pid);
-				pst.executeUpdate();
-			//}			
+
+			pst.setString(1, name);
+			pst.setString(2, surname);
+			pst.setInt(3, role_id);
+			pst.setString(4, pid);
+			pst.executeUpdate();
+
 			conn.commit();
-			System.out.println("Updated.");
+			System.out.println("Updated row PID " + pid + " in table 'employee'");
 		}
 		catch (SQLException e){
 			if (conn != null){
@@ -265,11 +255,12 @@ public class Database{
 		String query = "DELETE FROM employee WHERE pid=?";
 		try (PreparedStatement pst = conn.prepareStatement(query)){
 			conn.setAutoCommit(false);
-			//for (int i=0; i<pid.length; i++){
-				pst.setString(1, pid);
-				pst.executeUpdate();
-			//}
+
+			pst.setString(1, pid);
+			pst.executeUpdate();
+
 			conn.commit();
+			System.out.println("Deleted row PID " + pid + " from table 'employee'");
 		}
 		catch (SQLException e){
 			if (conn != null){
