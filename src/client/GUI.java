@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.DataInputStream;
@@ -194,7 +195,7 @@ public class GUI extends JFrame{
 		m1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				refreshTable();
+				refreshTable(getData(""));
 			}
 		});
 		m2.addActionListener(new ActionListener(){
@@ -207,7 +208,7 @@ public class GUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e){
 				table = "role";
-				refreshTable();
+				refreshTable(getData(""));
 				lbl_01.setText("Current table: " + table);
 			}
 		});
@@ -215,7 +216,7 @@ public class GUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e){
 				table = "employee";
-				refreshTable();
+				refreshTable(getData(""));
 				lbl_01.setText("Current table: " + table);
 			}
 		});
@@ -301,12 +302,7 @@ public class GUI extends JFrame{
 		b21.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-            	if (txt_f21.getText().equals("")){
-            		System.out.println("ID required.");
-            	}
-            	else {
-            		System.out.println("OK");
-            	}
+            	refreshTable(getData(txt_f21.getText()));
 			}
 		});
 		b22.addActionListener(new ActionListener(){
@@ -452,12 +448,7 @@ public class GUI extends JFrame{
 		b61.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-            	if (txt_f61.getText().equals("")){
-            		System.out.println("PID required.");
-            	}
-            	else {
-            		System.out.println("OK");
-            	}
+        		refreshTable(getData(txt_f61.getText()));
 			}
 		});
 		b62.addActionListener(new ActionListener(){
@@ -558,46 +549,84 @@ public class GUI extends JFrame{
 		this.setLayout(gl);
 		this.setVisible(true);
 		
-		refreshTable();
+		refreshTable(getData(""));
 	}
 	
-	public void refreshTable(){
+	public void refreshTable(ArrayList<String[]> data){
 		String[] roleColumns = new String[] {
             "ID", "Name", "Salary"
         };
         String[] employeeColumns = new String[] {
             "PID", "Name", "Surname", "Join Date", "Role ID"
         };
-        //*
-        Object[][] data = new Object[][] {
-            {1, "Sales Manager", 255.50 },
-            {2, "Cashier", 180.00 },
-            {3, "Inventory Manager", 220.75 },
-        };
-        Object[][] data2 = new Object[][] {
-            {39238122, "Travis", "Moons", "2023-08-05", 3 },
-            {39238123, "Clair", "Moons", "2023-08-05", 1 },
-            {36812001, "Claude", "Schulz", "2023-08-05", 2 },
-        };
-        //*/
-        
-        
+
 		if (this.table == "role"){
 			dtm_01 = new DefaultTableModel(null, roleColumns);
-			for (int i=0; i < data.length; i++){
-				dtm_01.addRow(data[i]);
+			for (String[] obj : data){
+				dtm_01.addRow(obj);
 			}
 			dtm_01.fireTableDataChanged();
 			tbl_01.setModel(dtm_01);
 		}
 		if (this.table == "employee"){
 			dtm_02 = new DefaultTableModel(null, employeeColumns);
-			for (int i=0; i < data2.length; i++){
-				dtm_02.addRow(data2[i]);
+			for (String[] obj : data){
+				dtm_02.addRow(obj);
 			}
 			dtm_02.fireTableDataChanged();
 			tbl_01.setModel(dtm_02);
 		}
+	}
+	
+	public ArrayList<String[]> getData(String query){
+		String reply = "";
+		ArrayList<String[]> data = new ArrayList<String[]>();
+		if (this.table == "role"){
+			try {
+				connectToServer();
+				out.writeInt(1);
+				if (query == "") out.writeInt(0);
+				else out.writeInt(Integer.parseInt(query));
+				while (!(reply = in.readUTF()).equals("DONE")){
+					String[] row = new String[]{reply, "", ""};
+					reply = in.readUTF();
+					row[1] = reply;
+					reply = in.readUTF();
+					row[2] = reply;
+					data.add(row);
+				}
+				reply = "";
+		    	sock.close();
+			}
+			catch (IOException ex){
+				Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+			}
+    	}
+		if (this.table == "employee"){
+			try {
+				connectToServer();
+				out.writeInt(6);
+				out.writeUTF(query);
+				while (!(reply = in.readUTF()).equals("DONE")){
+					String[] row = new String[]{reply, "", "", "", ""};
+					reply = in.readUTF();
+					row[1] = reply;
+					reply = in.readUTF();
+					row[2] = reply;
+					reply = in.readUTF();
+					row[3] = reply;
+					reply = in.readUTF();
+					row[4] = reply;
+					data.add(row);
+				}
+				reply = "";
+		    	sock.close();
+			}
+			catch (IOException ex){
+				Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+			}
+    	}
+    	return data;
 	}
 	
 	public void connectToServer(){

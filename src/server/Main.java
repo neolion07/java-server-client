@@ -17,9 +17,9 @@ public class Main{
 		DataInputStream in;
 		DataOutputStream out;
 		Database db;
-		int req_code; //(role) 0:post, 1:read, 2:readall, 3:update, 4:delete
-					  //(employee) 5:post, 6:read, 7:readall, 8:update, 9:delete
-		String query;
+		int req_code; //(role) 0:post, 1:read, 3:update, 4:delete
+					  //(employee) 5:post, 6:read, 8:update, 9:delete
+		ArrayList<String[]> res;
 		
 		try {
 			srv = new ServerSocket(PORT);
@@ -44,10 +44,16 @@ public class Main{
 						);
 						break;
 					case 1:
-						
-						break;
-					case 2:
-						
+						res = db.readRole(in.readInt());
+						//*
+						for (String[] obj : res){
+							out.writeUTF(obj[0]);
+							out.writeUTF(obj[1]);
+							out.writeUTF(obj[2]);
+							out.flush();
+						}
+						//*/
+						out.writeUTF("DONE");
 						break;
 					case 3:
 						db.updateRole(
@@ -69,8 +75,16 @@ public class Main{
 						);
 						break;
 					case 6:
-						break;
-					case 7:
+						res = db.readEmployee(in.readUTF());
+						for (String[] obj : res){
+							out.writeUTF(obj[0]);
+							out.writeUTF(obj[1]);
+							out.writeUTF(obj[2]);
+							out.writeUTF(obj[3]);
+							out.writeUTF(obj[4]);
+							out.flush();
+						}
+						out.writeUTF("DONE");
 						break;
 					case 8:
 						db.updateEmployee(

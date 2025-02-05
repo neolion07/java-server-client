@@ -80,9 +80,9 @@ public class Database{
 			lgr.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-	public ArrayList<Object[]> readRole(int id){
+	public ArrayList<String[]> readRole(int id){
 		String query = "SELECT * FROM role WHERE id=?";
-		ArrayList<Object[]> results = new ArrayList<Object[]>();
+		ArrayList<String[]> results = new ArrayList<String[]>();
 		PreparedStatement pst = null;
 		try {
 			if (id <= 0){
@@ -192,12 +192,12 @@ public class Database{
 		}
 	}
 	
-	public ArrayList<Object[]> readEmployee(String pid){
+	public ArrayList<String[]> readEmployee(String pid){
 		String query = "SELECT * FROM employee WHERE pid=?";
-		ArrayList<Object[]> results = new ArrayList<Object[]>();
+		ArrayList<String[]> results = new ArrayList<String[]>();
 		PreparedStatement pst = null;
 		try {
-			if (pid == ""){
+			if (pid.equals("")){
 				query = "SELECT * FROM employee";
 				pst = conn.prepareStatement(query);
 			}
