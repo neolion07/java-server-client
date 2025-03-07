@@ -630,8 +630,8 @@ public class GUI extends JFrame{
 	}
 	
 	public void connectToServer(){
-		final String host = "127.0.0.1";
-		final int port = 3000;
+		final String host = "localhost" /* "127.0.0.1" */;
+		final int port = 3000 /* 3000 */;
 		try {
 			this.sock = new Socket(host, port);
 			this.out = new DataOutputStream(sock.getOutputStream());
