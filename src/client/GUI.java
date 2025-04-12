@@ -567,6 +567,7 @@ public class GUI extends JFrame{
 			}
 			dtm_01.fireTableDataChanged();
 			tbl_01.setModel(dtm_01);
+			tbl_01.setDefaultEditor(Object.class, null);
 		}
 		if (this.table == "employee"){
 			dtm_02 = new DefaultTableModel(null, employeeColumns);
@@ -575,6 +576,7 @@ public class GUI extends JFrame{
 			}
 			dtm_02.fireTableDataChanged();
 			tbl_01.setModel(dtm_02);
+			tbl_01.setDefaultEditor(Object.class, null);
 		}
 	}
 	
